@@ -1,5 +1,4 @@
 import React from "react";
-import MainComponent from "../Maincomponent";
 import Menu from "./Menu";
 import Home from "./Home";
 import Contact from "./Contact";
