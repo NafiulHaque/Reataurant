@@ -1,19 +1,26 @@
 import { Component } from "react";
-import { Button, Form, FormGroup, Label, Input, Col } from "reactstrap";
+import { Button, FormGroup, Label, Col } from "reactstrap";
+import { Form, actions, Control, Errors } from "react-redux-form";
+import { connect } from "react-redux";
+const mapDispatchToProps = dispatch => {
+  return {
+    resetFeedbackForm: () => {
+      dispatch(actions.reset("feedback"));
+    }
+  };
+};
+
+const required = val => val && val.length;
+const isNumber = val => !isNaN(Number(val));
+const validEmail = val =>
+  /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(val);
 
 class Contact extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      firstname: "",
-      lastname: "",
-      telnum: "",
-      email: "",
-      agree: "false",
-      contactType: "Tel",
-      massage: ""
-    };
-  }
+  handleSubmit = values => {
+    console.log(values);
+    this.props.resetFeedbackForm();
+  };
+
   render() {
     document.title = "Contact";
     return (
@@ -23,17 +30,31 @@ class Contact extends Component {
             <h3>Send us your Feedback</h3>
           </div>
           <div className="col-12">
-            <Form>
+            <Form
+              model="feedback"
+              onSubmit={values => this.handleSubmit(values)}
+            >
               <FormGroup row>
                 <Label htmlFor="firstname" md={2}>
                   First Name
                 </Label>
                 <Col md={10}>
-                  <Input
-                    type="text"
+                  <Control.text
+                    model=".firstname"
                     name="fristname"
                     placeholder="First Name"
-                    value={this.state.firstname}
+                    className="form-control"
+                    validators={{
+                      required
+                    }}
+                  />
+                  <Errors
+                    className="text-danger"
+                    model=".firstname"
+                    show="touched"
+                    messages={{
+                      required: "Required "
+                    }}
                   />
                 </Col>
               </FormGroup>
@@ -42,11 +63,22 @@ class Contact extends Component {
                   Last Name
                 </Label>
                 <Col md={10}>
-                  <Input
-                    type="text"
+                  <Control.text
+                    model=".lastname"
                     name="lastname"
                     placeholder="Last Name"
-                    value={this.state.lastname}
+                    className="form-control"
+                    validators={{
+                      required
+                    }}
+                  />
+                  <Errors
+                    className="text-danger"
+                    model=".lastname"
+                    show="touched"
+                    messages={{
+                      required: "Required "
+                    }}
                   />
                 </Col>
               </FormGroup>
@@ -55,11 +87,24 @@ class Contact extends Component {
                   Contact Tel
                 </Label>
                 <Col md={10}>
-                  <Input
-                    type="tel"
+                  <Control.text
+                    model=".telnum"
                     name="telnum"
                     placeholder="Tel. Number"
-                    value={this.state.telnum}
+                    className="form-control"
+                    validators={{
+                      required,
+                      isNumber
+                    }}
+                  />
+                  <Errors
+                    className="text-danger"
+                    model=".telnum"
+                    show="touched"
+                    messages={{
+                      required: "Required ",
+                      isNumber: "invalid Number!"
+                    }}
                   />
                 </Col>
               </FormGroup>
@@ -68,11 +113,24 @@ class Contact extends Component {
                   Email
                 </Label>
                 <Col md={10}>
-                  <Input
-                    type="text"
+                  <Control.text
+                    model=".email"
                     name="email"
                     placeholder="Email"
-                    value={this.state.email}
+                    className="form-control"
+                    validators={{
+                      required,
+                      validEmail
+                    }}
+                  />
+                  <Errors
+                    className="text-danger"
+                    model=".email"
+                    show="touched"
+                    messages={{
+                      required: "Required ",
+                      validEmail: "invalid email!"
+                    }}
                   />
                 </Col>
               </FormGroup>
@@ -80,24 +138,24 @@ class Contact extends Component {
                 <Col md={{ size: 6, offset: 2 }}>
                   <FormGroup check>
                     <Label check>
-                      <Input
-                        type="checkbox"
+                      <Control.checkbox
+                        model=".agree"
                         name="agree"
-                        checked={this.state.agree}
+                        className="form-check-input"
                       />
                       <strong>May we contact you</strong>
                     </Label>
                   </FormGroup>
                 </Col>
                 <Col md={{ size: 3, offset: 1 }}>
-                  <Input
-                    type="select"
+                  <Control.select
+                    model=".contactType"
                     name="contactType"
-                    value={this.state.contactType}
+                    className="form-control"
                   >
                     <option>Tel.</option>
                     <option>Email.</option>
-                  </Input>
+                  </Control.select>
                 </Col>
               </FormGroup>
               <FormGroup row>
@@ -105,12 +163,23 @@ class Contact extends Component {
                   Your Feedback
                 </Label>
                 <Col md={10}>
-                  <Input
-                    type="textarea"
+                  <Control.textarea
+                    model=".message"
                     name="message"
-                    value={this.state.massage}
                     rows="12"
-                  ></Input>
+                    className="form-control"
+                    validators={{
+                      required
+                    }}
+                  />
+                  <Errors
+                    className="text-danger"
+                    model=".message"
+                    show="touched"
+                    messages={{
+                      required: "Required "
+                    }}
+                  />
                 </Col>
               </FormGroup>
               <FormGroup>
@@ -128,4 +197,4 @@ class Contact extends Component {
   }
 }
 
-export default Contact;
+export default connect(null, mapDispatchToProps)(Contact);
